@@ -1,0 +1,197 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#resultSearch").hide();
+        $("#countryDropdown").html('<option value="-1">Please Select a Country</option>');
+        $("#cityDropdown").html('<option value="-1">Please Select a City</option>');
+        $.ajax({
+
+            'url': 'http://localhost:14559/country/getcountrylist',
+            'type': 'GET',
+            'data': {},
+            'success': function (data) {
+                var s = '<option value="-1">Please Select a Country</option>';
+                for (var i = 0; i < data.length; i++) {
+                    s += '<option value="' + data[i].Code + '">' + data[i].Name + '</option>';
+                }
+                $("#countryDropdown").html(s);
+            },
+            'error': function (request, error) {
+                alert("Request: " + JSON.stringify(request));
+            }
+        });
+
+        $("#countryDropdown").change(function () {
+            $.ajax({
+                'url': 'http://localhost:14559/city/getcity?country=' + $('#countryDropdown').val(),
+                'type': 'GET',
+                'data': {},
+                'success': function (data) {
+                    var s = '<option value="-1">Please Select a City</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        s += '<option value="' + data[i].Id + '">' + data[i].Name + '</option>';
+                    }
+                    $("#cityDropdown").html(s);
+                },
+                'error': function (request, error) {
+                    alert("Request: " + JSON.stringify(request));
+                }
+            });
+        });
+
+        $("#cityDropdown").change(function () {
+            if ($('#cityDropdown').val() != "-1") {
+                $.ajax({
+                    'url': 'http://localhost:14559/weather/getweatherbycity?cityid=' + $('#cityDropdown').val(),
+                    'type': 'GET',
+                    'data': {},
+                    'success': function (data) {
+                        $('#locationLabel').text(data.Location);
+                        $('#timeLabel').text(data.Time);
+                        $('#windLabel').text(data.Wind);
+                        $('#visibilityLabel').text(data.Visibility);
+                        $('#skyConditionLabel').text(data.SkyCondition);
+                        $('#celciusLabel').text(data.TemperatureInCelcius);
+                        $('#fahrenheithLabel').text(data.TemperatureInFahrenheith);
+                        $('#dewPointLabel').text(data.DewPoint);
+                        $('#relativeHumidityLabel').text(data.RelativeHumidity);
+                        $('#pressureLabel').text(data.Pressure);
+                        $("#resultSearch").show();
+
+                    },
+                    'error': function (request, error) {
+                        alert("Request: " + JSON.stringify(request));
+                    }
+                });
+            }
+            else
+            {
+                $("#resultSearch").hide();
+            }
+        });
+    });
+
+
+    
+    
+</script>
+<div class="text-center">
+    <form id="WeatherForm">
+        <div class="form-group row">
+            <div class="col-md-2">
+                <label for="countryDropdown"><b>Country</b></label>
+            </div>
+            <span class="required-field"><i class="fa fa-asterisk"></i></span>
+            <div class="col-md-8">
+                <select class="form-control" id="countryDropdown" name="countryDropdown"></select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-2">
+                <label for="countryDropdown"><b>City</b></label>
+            </div>
+            <span class="required-field"><i class="fa fa-asterisk"></i></span>
+            <div class="col-md-8">
+                <select class="form-control" id="cityDropdown" name="cityDropdown"></select>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="text-center" id="resultSearch">
+    <div class="form-group row">
+        <div class="col-md-2">
+            <label><b>Location</b></label>
+        </div>
+        <span class="required-field"><i class="fa fa-asterisk"></i></span>
+        <div class="col-md-8">
+            <label id="locationLabel"></label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-2">
+            <label> <b>Time</b></label>
+        </div>
+        <span class="required-field"><i class="fa fa-asterisk"></i></span>
+        <div class="col-md-8">
+            <label id="timeLabel"></label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-2">
+            <label><b>Wind</b></label>
+        </div>
+        <span class="required-field"><i class="fa fa-asterisk"></i></span>
+        <div class="col-md-8">
+            <label id="windLabel"></label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-2">
+            <label> <b>Visibility</b></label>
+        </div>
+        <span class="required-field"><i class="fa fa-asterisk"></i></span>
+        <div class="col-md-8">
+            <label id="visibilityLabel"></label>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-2">
+            <label> <b>Sky Condition</b></label>
+        </div>
+        <span class="required-field"><i class="fa fa-asterisk"></i></span>
+        <div class="col-md-8">
+            <label id="skyConditionLabel"></label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-2">
+            <label><b>Temperature In Celcius</b></label>
+        </div>
+        <span class="required-field"><i class="fa fa-asterisk"></i></span>
+        <div class="col-md-8">
+            <label id="celciusLabel"></label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-2">
+            <label> <b>Temperature In Fahrenheith</b></label>
+        </div>
+        <span class="required-field"><i class="fa fa-asterisk"></i></span>
+        <div class="col-md-8">
+            <label id="fahrenheithLabel"></label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-2">
+            <label><b>Dew Point</b></label>
+        </div>
+        <span class="required-field"><i class="fa fa-asterisk"></i></span>
+        <div class="col-md-8">
+            <label id="dewPointLabel"></label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-2">
+            <label> <b>Relative Humidity</b></label>
+        </div>
+        <span class="required-field"><i class="fa fa-asterisk"></i></span>
+        <div class="col-md-8">
+            <label id="relativeHumidityLabel"></label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-2">
+            <label><b>Pressure</b></label>
+        </div>
+        <span class="required-field"><i class="fa fa-asterisk"></i></span>
+        <div class="col-md-8">
+            <label id="pressureLabel"></label>
+        </div>
+    </div>
+</div>
